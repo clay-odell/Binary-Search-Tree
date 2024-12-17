@@ -109,43 +109,127 @@ class BinarySearchTree {
    * Return an array of visited nodes. */
 
   dfsPreOrder() {
-
+    const result = [];
+    const traverse = (node) => {
+      if (node === null) return;
+      result.push(node.val);
+      traverse(node.left);
+      traverse(node.right);
+    }
+    traverse(this.root);
+    return result;
+    
   }
 
   /** dfsInOrder(): Traverse the array using in-order DFS.
    * Return an array of visited nodes. */
 
   dfsInOrder() {
-
+    const result = [];
+    const traverse = (node) => {
+      if (node === null) return;
+      traverse(node.left);
+      result.push(node.val);
+      traverse(node.right);
+    }
+    traverse(this.root);
+    return result;
   }
 
   /** dfsPostOrder(): Traverse the array using post-order DFS.
    * Return an array of visited nodes. */
 
   dfsPostOrder() {
-
+    const result = [];
+    const traverse = (node) => {
+      if (node === null) return;
+      traverse(node.left);
+      traverse(node.right);
+      result.push(node.val);
+    }
+    traverse(this.root);
+    return result;
   }
 
   /** bfs(): Traverse the array using BFS.
    * Return an array of visited nodes. */
 
   bfs() {
-
+    const result = [];
+    const queue = [];
+    
+    if (this.root === null) return result;
+  
+    queue.push(this.root);
+  
+    while (queue.length > 0) {
+      const currentNode = queue.shift();
+      result.push(currentNode.val);
+  
+      if (currentNode.left !== null) {
+        queue.push(currentNode.left);
+      }
+      if (currentNode.right !== null) {
+        queue.push(currentNode.right);
+      }
+    }
+  
+    return result;
   }
+  
 
   /** Further Study!
    * remove(val): Removes a node in the BST with the value val.
    * Returns the removed node. */
 
   remove(val) {
-
+    let removedVal = null;
+    const removeNode = (node, val) => {
+      if (node === null) return null;
+      if (node.val === val) {
+        removedVal = node.val;
+        if(node.left === null && node.right === null) {
+          return null;
+        }
+        if(node.left === null){
+        return node.right;
+        }
+        if (node.right === null) {
+          return node.left;
+        }
+        let currentNode = node.right;
+        while (currentNode.left !== null) {
+          currentNode = currentNode.left;
+        }
+        node.val = currentNode.val;
+        node.right = removeNode(node.right, currentNode.val);
+        return node;
+      } else if (val < node.val) {
+        node.left = removeNode(node.left, val);
+        return node;
+      } else {
+        node.right = removeNode(node.right, val);
+        return node;
+      }
+    }
+    this.root = removeNode(this.root, val);
+    return removedVal;
   }
 
   /** Further Study!
    * isBalanced(): Returns true if the BST is balanced, false otherwise. */
 
   isBalanced() {
+    const checkHeightandBalance = (node) => {
+      if (node === null) return {height: 0, balanced: true};
+      let left = checkHeightandBalance(node.left);
+      let right = checkHeightandBalance(node.right);
 
+      let height = Math.max(left.height, right.height) +1;
+      let balanced = left.balanced && right.balanced && Math.abs(left.height - right.height) <=1;
+      return { height, balanced};
+    }
+    return checkHeightandBalance(this.root).balanced;
   }
 
   /** Further Study!
@@ -153,7 +237,21 @@ class BinarySearchTree {
    * Otherwise return undefined. */
 
   findSecondHighest() {
-    
+    if(this.root === null || this.root.left === null && this.root.right === null ) return undefined;
+    let currentNode = this.root;
+    let parent = null;
+    while (currentNode.right !== null) {
+      parent = currentNode;
+      currentNode = currentNode.right;
+    }
+    if (currentNode.left !== null){
+     currentNode = currentNode.left;
+     while (currentNode.right !== null){
+      currentNode = currentNode.right
+     } 
+     return currentNode.val;
+    }
+    return parent.val;
   }
 }
 
